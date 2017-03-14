@@ -1,0 +1,28 @@
+body {
+	background-image: url("Images/Login.jpg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	font-family: Helvetica;
+}
+
+label {
+	display: inline-block;
+	font-weight:bold;
+	width:150px;
+	font-size:15px;
+	text-align: right;
+}
+
+.input-group {
+	margin-top:10px;
+	width:60%;
+	display:flex;
+	justify-content:space-between;
+	flex-wrap:wrap;
+}
+			
+.box {
+	border:#666666 solid 2px;
+}
