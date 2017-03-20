@@ -32,7 +32,8 @@ body {
 .navigation-grid {
 	position: relative;
 	top: 15%;
-	width: 100%;
+	width: 95%;
+	left: 3%;
 	height: 50%;
 	text-align: center;
 	border: 3px solid;

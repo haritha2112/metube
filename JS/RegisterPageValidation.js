@@ -65,7 +65,5 @@ function RegisterPageValidation() {
 		alert ( "Please choose your Gender" );
 		return false;
 	}
-	
-	return true;
 }
   

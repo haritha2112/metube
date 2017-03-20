@@ -1,3 +1,11 @@
+<?php
+	include_once "function.php";
+	check_logged_in();
+	
+	if(isset($_POST['logout'])) {
+		logout();
+	}
+?>
 <html>
 	<head>
 		<title> MeTube Home Page</title>
@@ -5,13 +13,13 @@
 	</head>
 	<body>
 		<h1 align = "center"> <b> MeTube </b> </h1>
-		<form class = "Logout" name="Logout" method="post" action="LoginPage.php">
-			<input type="submit" value="Logout" />
+		<form class = "Logout" name="Logout" method="post" action="">
+			<input type="submit" value="Logout" name = "logout"/>
 		</form>
 		<hr>
 		<br>
 			<form class = "Profile" name="Profile" action="Profile.php"  method = "post">
-				<input type="submit" value="My Profile" />
+				<input type="submit" value="My Profile" name = "Submit"/>
 			</form>
 		<table class="navigation-grid">
 			<tr>
