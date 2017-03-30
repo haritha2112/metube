@@ -1,0 +1,16 @@
+body {
+	background-image: url("Images/Login.jpg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	font-family: Helvetica;
+}
+label {
+	font-weight:bold;
+	width:150px;
+	font-size:15px;
+}
+	.box {
+	border:#666666 solid 2px;
+}

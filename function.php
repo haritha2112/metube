@@ -3,7 +3,7 @@
 function check_logged_in() {
 	session_start();
 	if(!isset($_SESSION['username'])){ // logged in, get user info
-        header("Location: LoginPage.php");
+        header("Location: index.php");
 	}
 }
 
@@ -11,7 +11,7 @@ function logout() {
 	if(isset($_SESSION['username'])){
 		unset($_SESSION['username']);
 	}
-	header('Location: LoginPage.php');
+	header('Location: index.php');
 }
 
 function user_exist_check ($fname,$lname,$uname,$pwd,$gender){
@@ -110,7 +110,7 @@ function delete_profile($username){
 		$query = "delete from USER where u_id = ".$row['u_id'];
 		$update = mysqli_query($con,$query);
 		if($update)
-			header('Location: LoginPage.php');
+			header('Location: index.php');
 		else
 			die ("Sorry could not delete your profile!: <br />". mysql_error());
 	}

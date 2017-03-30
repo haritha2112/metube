@@ -28,3 +28,8 @@ body {
 		-webkit-border-radius: 10px;
 		margin:10px
 	}
+#uploadWindow {
+	padding: 10px;
+	width: 60%;
+	margin: 50px auto;
+}

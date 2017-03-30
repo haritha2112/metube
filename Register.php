@@ -47,7 +47,7 @@
 					<input type="Reset" value = "Reset"/> <input type = "submit" value = "Submit" name = "Submit"/>  
 					<br><br>
 					<div class = "OldUser">
-						<p> Already a member? <a href = "LoginPage.php"> Login Now! </a>
+						<p> Already a member? <a href = "index.php"> Login Now! </a>
 					</div>
 				</form>
 			</div>
