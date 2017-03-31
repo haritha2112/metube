@@ -18,17 +18,19 @@
 		</form>
 		<hr>
 		<form class = "BackHome" name="BackHome" method="post" action="Home.php">
-			<input  type="submit" value="Home" />
+			<input  type="submit" value="Home" name = "Home"/>
 		</form>
 		<h2> My Profile </h2>
 		<table class="navigation-grid">
 			<tr>
 				<td class="grid-item"><a href="ProfileUpdate.php"> Update Profile</a></td>
 				<td class="grid-item"><a href="AddContacts.php"> Add Contacts </a></td>
+				<td class="grid-item"><a href="Message.php"> Messages </a></td>
 			</tr>
 			<tr>
 				<td class="grid-item"><a href="MyPeople.php"> My People </a></td>
-				<td class="grid-item"><a href="BlockedUsers.php"> Blocked Users </a></td>
+				<td class="grid-item"><a href="MyUploads.php"> My Uploads </a></td>
+				<td class="grid-item"><a href="Groups.php"> Groups </a></td>
 			</tr>
 		</table>
 	</body>

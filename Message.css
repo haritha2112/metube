@@ -7,17 +7,18 @@ body {
 	font-family: Helvetica;
 }
 
-.Logout{
-	position:relative;
-	text-align: right;
-	margin-right: 2%;
-}
 
 .BackHome{
 	position:relative;
 	left: 1270px;
 	color: black;
 }
+
+.BackProfile{
+		position:relative;
+		text-align: right;
+		margin-right: 1%;
+	}
 
 .button {
 	background-color: #000000;
@@ -38,7 +39,7 @@ body {
 	top: 15%;
 	width: 95%;
 	left: 5%;
-	height: 50%;
+	height: 70%;
 	text-align: center;
 	border: 3px solid;
 }
