@@ -6,11 +6,11 @@
 		logout();
 	}
 	
-	if(isset($_POST['SaveType'])){
-		$type = $_POST['Type'];
-		$u_id = $_POST['u_id'];
-		$current_id = get_current_uid($_SESSION['username']);
-		update_contact_type($current_id, $u_id, $type);
+	if(isset($_POST['SendMessage'])){
+		$message = $_POST['Message'];
+		$to_u_id = $_POST['u_id'];
+		$from_u_id = get_current_uid($_SESSION['username']);
+		send_personal_message($from_u_id, $to_u_id, $message);
 	}
 ?>
 <html>
@@ -55,25 +55,7 @@
 						<td class = 'grid-item'>".$row['lname']."</td>
 						<form action = '' method = 'post'>
 							<td class = 'grid-item'>
-								<select name = 'Type'>";
-								if($row['type'] == 'CONTACT') {
-									echo "<option value = 'CONTACT' name = 'Type' selected> Contact </option>";
-								} else {
-									echo "<option value = 'CONTACT' name = 'Type'> Contact </option>";
-								}
-								
-								if($row['type'] == 'FRIEND') {
-									echo "<option value = 'FRIEND' name = 'Type' selected> Friend </option>";
-								} else {
-									echo "<option value = 'FRIEND' name = 'Type'> Friend </option>";
-								}
-								
-								if($row['type'] == 'FAMILY') {
-									echo "<option value = 'FAMILY' name = 'Type' selected> Family </option>";
-								} else {
-									echo "<option value = 'FAMILY' name = 'Type'> Family </option>";
-								}
-								echo "</select>
+								<input type='text' name='Message' placeholder='600 Character limit' />
 							</td>
 						<td>
 							<input type='submit' name='SendMessage' value='Send' />

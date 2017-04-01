@@ -171,6 +171,41 @@ function update_contact_type($current_id, $u_id, $type){
 	header('Location: MyPeople.php');
 }
 
+function send_personal_message($from_u_id, $to_u_id, $message){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into PERSONAL_MESSAGE (message,from_u_id,to_u_id) values ('$message','$from_u_id','$to_u_id')";
+	$insert = mysqli_query($con,$query );
+	if(!$insert){
+		die ("Could not insert into the database: <br />". mysql_error());	
+	}
+	header('Location: SendMessage.php');
+}
+
+function retrive_personal_message($current_uid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select msg_id,uname,message,msg_date from PERSONAL_MESSAGE, USER where to_u_id = ".$current_uid." and from_u_id = u_id order by msg_date desc";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	else {
+		return $result;
+	}
+}
+
+function delete_personal_message($msg_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from PERSONAL_MESSAGE where msg_id = '$msg_id'";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not delete from database: <br />". mysql_error());
+	}
+	header('Location: Inbox.php');
+}
+
 function updateMediaTime($mediaid)
 {
 	$query = "	update  media set lastaccesstime=NOW()

@@ -6,11 +6,9 @@
 		logout();
 	}
 	
-	if(isset($_POST['SaveType'])){
-		$type = $_POST['Type'];
-		$u_id = $_POST['u_id'];
-		$current_id = get_current_uid($_SESSION['username']);
-		update_contact_type($current_id, $u_id, $type);
+	if(isset($_POST['DeleteMessage'])){
+		$msg_id = $_POST['msg_id'];
+		delete_personal_message($msg_id);
 	}
 ?>
 <html>
@@ -28,5 +26,29 @@
 			<input  type="submit" value="Back" name = "Submit"/>
 		</form>
 		<h2> Inbox </h2>
+		<table class = "navigation-grid" align = "center">
+			<tr>
+				<th><i> From </i></th>
+				<th><i> Message </i></th>
+				<th><i> Time </i></th>
+			</tr>
+			<?php
+				$current_uid = get_current_uid($_SESSION['username']);
+				$display_messages = retrive_personal_message($current_uid);
+				while($row = mysqli_fetch_assoc($display_messages)) {
+					echo "<tr>
+						<td class = 'grid-item'>".$row['uname']."</td>
+						<td class = 'grid-item'>".$row['message']."</td>
+						<td class = 'grid-item'>".$row['msg_date']."</td>
+						<form action = '' method = 'post'>
+							<td>
+								<input type='submit' name='DeleteMessage' value='Delete' />
+								<input type='hidden' name='msg_id' value='".$row['msg_id']."' />
+							</td>
+						</form>
+					</tr>";
+				}
+			?>
+		</table>
 	</body>
 </html>
