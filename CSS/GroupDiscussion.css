@@ -13,7 +13,7 @@ body {
 		margin-right: 1%;
 	}
 	
-.BackProfile{
+.BackGroup{
 		position:relative;
 		text-align: right;
 		margin-right: 1%;
@@ -29,16 +29,14 @@ body {
 		margin:10px
 	}
 
-		
 .grid-item {
     border: 1px dotted;
 }
 
 .navigation-grid {
-    position: relative;
-    width: 55%;
-    left: 3%;
-    text-align: center;
-    border: 3px solid;
-	top: 5%
+	top: 15%;
+	width: 95%;
+	left: 5%;
+	text-align: center;
+	border: 3px solid;
 }

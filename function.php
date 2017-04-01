@@ -136,6 +136,15 @@ function get_current_uid($username){
 	return $row[0];
 }
 
+function get_user_details($u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select uname, fname, lname from USER where u_id = '$u_id'";
+	$result = mysqli_query($con,$query);
+	$row = mysqli_fetch_array($result);
+	return $row;
+}
+
 function add_contact($u_id1, $u_id2,$contact){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
@@ -206,6 +215,71 @@ function delete_personal_message($msg_id){
 	header('Location: Inbox.php');
 }
 
+function create_group($u_id,$group_topic){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into GROUPS (g_topic,owner_u_id) values ('$group_topic','$u_id')";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	$group_id = mysqli_insert_id($con);
+	$query = "insert into GROUP_USERS (g_id, u_id) values ('$group_id','$u_id')";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	header('Location: Groups.php');
+}
+
+function add_user_to_group($g_id, $u_id, $owner_u_id, $g_topic) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into GROUP_USERS (g_id, u_id) values ('$g_id','$u_id')";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	header('Location: GroupDiscussion.php?g_id='.$g_id.'&owner_u_id='.$owner_u_id.'&g_topic='.$g_topic.'');
+}
+
+function retrive_groups($u_id) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select A.g_id, owner_u_id, g_topic, g_date from GROUPS A, GROUP_USERS B where B.g_id = A.g_id and B.u_id = ".$u_id." order by g_date DESC";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	else {
+		return $result;
+	}
+}
+
+function send_group_message($g_id, $message, $owner_u_id, $u_id, $g_topic){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into GROUP_MESSAGE (message,g_id,u_id) values ('$message','$g_id','$u_id')";
+	$insert = mysqli_query($con,$query );
+	if(!$insert){
+		die ("Could not insert into the database: <br />". mysql_error());	
+	}
+	header('Location: GroupDiscussion.php?g_id='.$g_id.'&owner_u_id='.$owner_u_id.'&g_topic='.$g_topic.'');
+}
+
+function retrieve_group_messages($g_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select uname, fname, lname, message, gmsg_date from GROUP_MESSAGE A, USER B where g_id = '$g_id' and A.u_id = B.u_id order by gmsg_date";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	else {
+		return $result;
+	}
+}
+
 function updateMediaTime($mediaid)
 {
 	$query = "	update  media set lastaccesstime=NOW()
@@ -218,6 +292,7 @@ function updateMediaTime($mediaid)
 	   die ("updateMediaTime() failed. Could not query the database: <br />". mysql_error());
 	}
 }
+
 
 function upload_error($result)
 {
