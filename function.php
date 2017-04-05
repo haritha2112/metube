@@ -280,6 +280,45 @@ function retrieve_group_messages($g_id){
 	}
 }
 
+function add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $filename, $path, $ownerid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query ="insert into MEDIA (m_title, description, category, extension, media_type, share_type, download_type, allow_commenting, allow_rating, view_count, filename, path, owner_u_id)".
+			"values ('$mediatitle', '$description', '$category', '$extension', '$mediatype', '$sharetype', '$downloadtype', '$comment', '$rate', 'NULL', '$filename', '$path', '$ownerid')"	;
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	header('Location: MediaUpload.php');
+	return mysqli_insert_id($con);
+}
+
+function display_my_uploads($id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA where m_id = '$id'";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	else {
+		return $result;
+	}
+}
+
+function retrive_my_uploads($owner_u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA where owner_u_id = '$owner_u_id'";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	else {
+		return $result;
+	}
+}
+
 function updateMediaTime($mediaid)
 {
 	$query = "	update  media set lastaccesstime=NOW()
@@ -296,7 +335,6 @@ function updateMediaTime($mediaid)
 
 function upload_error($result)
 {
-	//view erorr description in http://us2.php.net/manual/en/features.file-upload.errors.php
 	switch ($result){
 	case 1:
 		return "UPLOAD_ERR_INI_SIZE";

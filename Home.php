@@ -13,7 +13,7 @@
 	</head>
 	<body>
 		<h1 align = "center"> <b> MeTube </b> </h1>
-		<form class = "Logout" name="Logout" method="post" action="">
+		<form class = "Logout" name="Logout" method="post" action="index.php">
 			<input type="submit" value="Logout" name = "logout"/>
 		</form>
 		<hr>
@@ -29,7 +29,7 @@
 			</tr>
 			<tr>
 				<td class="grid-item"><a href="Playlist.php">My Playlists</a></td>
-				<td class="grid-item"><a href="Upload.php">Upload</a></td>
+				<td class="grid-item"><a href="MediaUpload.php">Upload</a></td>
 				<td class="grid-item"><a href="Channel.php">My Channels</a></td>
 			</tr>
 		</table>

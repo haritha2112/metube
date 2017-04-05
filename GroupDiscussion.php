@@ -28,6 +28,7 @@
 	<head>
 		<title> Group Discussion </title>
 		<link rel="stylesheet" href="CSS/GroupDiscussion.css">
+		<meta http-equiv="pragma" content="no-cache" />
 	</head>
 	<body align = "center">
 		<h1 align = "center"> <b> MeTube </b> </h1>
