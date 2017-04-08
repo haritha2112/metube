@@ -280,11 +280,11 @@ function retrieve_group_messages($g_id){
 	}
 }
 
-function add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $filename, $path, $ownerid){
+function add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $ownerid){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query ="insert into MEDIA (m_title, description, category, extension, media_type, share_type, download_type, allow_commenting, allow_rating, view_count, filename, path, owner_u_id)".
-			"values ('$mediatitle', '$description', '$category', '$extension', '$mediatype', '$sharetype', '$downloadtype', '$comment', '$rate', 'NULL', '$filename', '$path', '$ownerid')"	;
+	$query ="insert into MEDIA (m_title, description, category, extension, media_type, share_type, download_type, allow_commenting, allow_rating, view_count, owner_u_id)".
+			"values ('$mediatitle', '$description', '$category', '$extension', '$mediatype', '$sharetype', '$downloadtype', '$comment', '$rate', 'NULL', '$ownerid')";
 	$result = mysqli_query($con, $query);
 	if (!$result){
 		die ("Failed. Could not insert into the database: <br />". mysql_error());
@@ -293,7 +293,7 @@ function add_media($mediatitle, $description, $category, $extension, $mediatype,
 	return mysqli_insert_id($con);
 }
 
-function display_my_uploads($id){
+function fetch_media($id){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
 	$query = "select * from MEDIA where m_id = '$id'";
@@ -301,21 +301,184 @@ function display_my_uploads($id){
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
-	else {
-		return $result;
-	}
+	$row = mysqli_fetch_array($result);
+	return $row;
 }
 
-function retrive_my_uploads($owner_u_id){
+function retrive_my_uploads($owner_u_id, $mediatype){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "select * from MEDIA where owner_u_id = '$owner_u_id'";
+	$query = "select * from MEDIA where owner_u_id = '$owner_u_id' and media_type = '$mediatype' order by m_date DESC";
 	$result = mysqli_query($con, $query);
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
+	return $result;
+}
+
+function add_media_favourites($m_id, $u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from FAVOURITES where m_id = $m_id and u_id = $u_id"; 
+	$result = mysqli_query($con, $query);
+	$row = mysqli_fetch_array($result);
+	if(!$row) {
+		$insert_query = "insert into FAVOURITES (m_id, u_id) values ($m_id, $u_id)";
+		$insert_result = mysqli_query($con, $insert_query);
+		if (!$insert_result){
+			die ("Failed. Could not favourite <br />". mysql_error());
+		}
+	}
 	else {
-		return $result;
+		$delete_query = "delete from FAVOURITES where m_id = $m_id and u_id = $u_id";
+		$delete_result = mysqli_query($con, $delete_query);
+		if (!$delete_result){
+			die ("Failed. Could not unfavourite <br />". mysql_error());
+		}
+	}
+	header('Location: MyUploadsView.php?m_id='.$m_id);
+}
+
+function recent_uploads(){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA where share_type = '0' order by m_date DESC";
+	$result = mysqli_query($con, $query);
+	$row = mysqli_fetch_array($result);
+	if (!$result1){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	
+}
+
+function get_playlists($u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select p_id, p_name from PLAYLIST where u_id = $u_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function add_to_new_playlist($m_id,$p_name,$u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into PLAYLIST (p_name, u_id) values ('$p_name', $u_id)";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$p_id = mysqli_insert_id($con);
+	add_to_existing_playlist($m_id, $p_id);
+}
+
+function add_to_existing_playlist($m_id, $p_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into PLAYLIST_MEDIA (m_id, p_id) values ($m_id, $p_id)";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+}
+
+function get_playlist_media($p_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select A.m_id, m_title from PLAYLIST_MEDIA as A, MEDIA as B where p_id = $p_id and A.m_id = B.m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function get_favourite_media($u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select A.m_id, m_title from FAVOURITES as A, MEDIA as B where A.u_id = $u_id and A.m_id = B.m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function get_recent_uploads(){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA where share_type = '0' order by m_date DESC";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function create_new_channel($current_uid, $c_name, $c_description){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into CHANNEL (c_name, c_description, owner_u_id) values ('$c_name', '$c_description', $current_uid) ";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	header('Location: MyChannels.php');
+}
+
+function get_my_channels($current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select c_id, c_name, c_description from CHANNEL where owner_u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function get_channel_media($c_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select A.m_id, m_title from CHANNEL_MEDIA as A, MEDIA as B where c_id = $c_id and A.m_id = B.m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function add_to_channel($c_id, $m_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert ignore into CHANNEL_MEDIA (c_id, m_id) values ($c_id, $m_id)";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyUploads.php');
+}
+
+function delete_media($m_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from MEDIA where m_id = $m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyUploads.php');
+}
+
+function increment_view_count($m_id) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "update MEDIA set view_count = view_count + 1 where m_id = $m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 }
 
@@ -353,9 +516,4 @@ function upload_error($result)
 	}
 }
 
-function other()
-{
-	//You can write your own functions here.
-}
-	
 ?>

@@ -21,9 +21,10 @@
 			<input  type="submit" value="Home" name = "Home"/>
 		</form>
 		<h2> My Profile </h2>
+		<a class="btn btn-primary" href="ProfileUpdate.php" align="left">Update Profile</a>
 		<table class="navigation-grid">
 			<tr>
-				<td class="grid-item"><a href="ProfileUpdate.php"> Update Profile</a></td>
+				<td class="grid-item"><a href="MyFavourites.php"> My Favourites</a></td>
 				<td class="grid-item"><a href="AddContacts.php"> Add Contacts </a></td>
 				<td class="grid-item"><a href="Message.php"> Messages </a></td>
 			</tr>

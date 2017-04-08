@@ -34,8 +34,8 @@
 			}
 			else
 			{
-				$media_id = add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $filename, $path, $ownerid);
-				$path = 'Media_Uploads/'.$ownerid.'/'.$mediatitle.'.'.$extension;
+				$media_id = add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $ownerid);
+				$path = 'Media_Uploads/'.$ownerid.'/'.$media_id.'.'.$extension;
 				move_uploaded_file($tmp, $path);
 				$message="Media Uploaded Successfully!";
 				echo $message;

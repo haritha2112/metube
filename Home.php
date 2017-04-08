@@ -28,9 +28,9 @@
 				<td class="grid-item"><a href="MostViewed.php">Most Viewed</a></td>
 			</tr>
 			<tr>
-				<td class="grid-item"><a href="Playlist.php">My Playlists</a></td>
+				<td class="grid-item"><a href="MyPlaylist.php">My Playlists</a></td>
 				<td class="grid-item"><a href="MediaUpload.php">Upload</a></td>
-				<td class="grid-item"><a href="Channel.php">My Channels</a></td>
+				<td class="grid-item"><a href="MyChannels.php">My Channels</a></td>
 			</tr>
 		</table>
 	</body>
