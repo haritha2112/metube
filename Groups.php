@@ -46,7 +46,7 @@
 					while($row = mysqli_fetch_assoc($search_results)) {
 						echo "<tr>
 							<td class = 'grid-item'>".$row['g_topic']."</td>
-							<td class = 'grid-item'>".$row['g_date']."</td>
+							<td class = 'grid-item'>".substr($row['g_date'], 0, 10)."</td>
 							<form action = 'GroupDiscussion.php' method = 'get'>
 								<td>
 									<input type='submit' name='ViewGroupDiscussion' value='View' />

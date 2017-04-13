@@ -39,7 +39,7 @@
 					echo "<tr>
 						<td class = 'grid-item'>".$row['uname']."</td>
 						<td class = 'grid-item'>".$row['message']."</td>
-						<td class = 'grid-item'>".$row['msg_date']."</td>
+						<td class = 'grid-item'>".substr($row['msg_date'], 0, 10)."</td>
 						<form action = '' method = 'post'>
 							<td>
 								<input type='submit' name='DeleteMessage' value='Delete' />

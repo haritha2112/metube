@@ -90,7 +90,7 @@
 				echo "<div>
 				<p>".$row['uname']."   |   ".$row['fname']." ".$row['lname']."</p>
 				<p>".$row['message']."</p>
-				<p>".$row['gmsg_date']."</p>
+				<p>".substr($row['gmsg_date'], 0, 10)."</p>
 				</div>";
 			}
 			

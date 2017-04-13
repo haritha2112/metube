@@ -336,7 +336,7 @@ function add_media_favourites($m_id, $u_id){
 			die ("Failed. Could not unfavourite <br />". mysql_error());
 		}
 	}
-	header('Location: MyUploadsView.php?m_id='.$m_id);
+	header('Location: MediaView.php?m_id='.$m_id);
 }
 
 function recent_uploads(){
@@ -480,6 +480,87 @@ function increment_view_count($m_id) {
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
+	return $result;
+}
+
+function display_meta_data($mid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA, USER where m_id = $mid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$row = mysqli_fetch_array($result);
+	return $row;
+}
+
+function check_allow_commenting($mid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select allow_commenting from MEDIA where m_id = $mid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$row = mysqli_fetch_array($result);
+	return $row; 
+}
+
+function retrieve_media_comment($mid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select mc_id, mc_comment, mc_date, m_id, MEDIA_COMMENT.u_id, USER.uname as user from MEDIA_COMMENT, USER where m_id = $mid and MEDIA_COMMENT.u_id = USER.u_id order by mc_date ";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function post_media_comment($media_comment, $m_id, $u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into MEDIA_COMMENT (mc_comment, m_id, u_id) values ('$media_comment', '$m_id', '$u_id')";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not insert into the database: <br />". mysql_error());
+	}
+	header('Location: MediaView.php?m_id='.$m_id);
+}
+
+function delete_media_comment($mc_id, $m_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from MEDIA_COMMENT where mc_id = $mc_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not delete from database: <br />". mysql_error());
+	}
+	header('Location: MediaView.php?m_id='.$m_id);
+}
+
+function get_media_by_categories($media_category){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA where share_type = '0' and category = '$media_category'";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function most_viewed_media($u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select * from MEDIA, CONTACT where share_type = '0' and CONTACT.u_id2 != $u_id and CONTACT.type != 'BLOCKED' order by view_count DESC";
+	$result = mysqli_query($con, $query);
+	$row = mysqli_fetch_array($result);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
 }
 
 function updateMediaTime($mediaid)
@@ -494,7 +575,6 @@ function updateMediaTime($mediaid)
 	   die ("updateMediaTime() failed. Could not query the database: <br />". mysql_error());
 	}
 }
-
 
 function upload_error($result)
 {

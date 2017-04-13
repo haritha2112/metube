@@ -25,12 +25,14 @@
 		<table class="navigation-grid">
 			<tr>
 				<td class="grid-item"><a href="MyFavourites.php"> My Favourites</a></td>
-				<td class="grid-item"><a href="AddContacts.php"> Add Contacts </a></td>
-				<td class="grid-item"><a href="Message.php"> Messages </a></td>
+				<td class="grid-item"><a href="MyUploads.php"> My Uploads </a></td>
+				<td class="grid-item"><a href="MyPlaylist.php">My Playlists</a></td>
+				<td class="grid-item"><a href="MyChannels.php">My Channels</a></td>
 			</tr>
 			<tr>
+				<td class="grid-item"><a href="AddContacts.php"> Add Contacts </a></td>
 				<td class="grid-item"><a href="MyPeople.php"> My People </a></td>
-				<td class="grid-item"><a href="MyUploads.php"> My Uploads </a></td>
+				<td class="grid-item"><a href="Message.php"> Messages </a></td>
 				<td class="grid-item"><a href="Groups.php"> Groups </a></td>
 			</tr>
 		</table>

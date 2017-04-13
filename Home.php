@@ -24,13 +24,13 @@
 		<table class="navigation-grid">
 			<tr>
 				<td class="grid-item"><a href="RecentUploads.php">Whats new</a></td>
-				<td class="grid-item"><a href="Browse.php">Browse by Category</a></td>
+				<td class="grid-item"><a href="BrowseByCategory.php">Browse by Category</a></td>
 				<td class="grid-item"><a href="MostViewed.php">Most Viewed</a></td>
 			</tr>
 			<tr>
-				<td class="grid-item"><a href="MyPlaylist.php">My Playlists</a></td>
+				<td> </td>
 				<td class="grid-item"><a href="MediaUpload.php">Upload</a></td>
-				<td class="grid-item"><a href="MyChannels.php">My Channels</a></td>
+				<td> </td>
 			</tr>
 		</table>
 	</body>

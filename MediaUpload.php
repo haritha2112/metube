@@ -28,7 +28,7 @@
 				$media_upload_error = "One or more fields are missing.";
 			}
 			$extension = pathinfo($filename, PATHINFO_EXTENSION);
-			$allowed_types = array('mp4', 'mpg', 'wma', 'mov', 'flv', 'avi', 'qt', 'wmv', 'wmv', 'mp3', 'mpeg', 'jpeg', 'gif', 'png', 'jpg', 'pjeg', 'img');
+			$allowed_types = array('mp4', 'MP4', 'mpg', 'wma', 'mov', 'flv', 'avi', 'qt', 'wmv', 'wmv', 'mp3', 'mpeg', 'jpeg', 'gif', 'png', 'jpg', 'pjeg', 'img');
 			if(!in_array($extension, $allowed_types)) {
 				$message= "Media Format Not Supported!";
 			}
@@ -89,12 +89,11 @@
 				<td  class = 'grid-item'>
 				Select Category <select class = 'Category' name='Category'>
 					<option value="Movie Trailer" name="Category"> Movie Trailer </option>
-					<option value="Albums" name="Category"> Albums </option>
-					<option value="Random Clips" name="Category"> Random Clips </option>
-					<option value="Images" name="Category"> Image </option>
-					<option value="Random Audio" name="Category"> Random Audio </option>
-					<option value="Songs" name="Category"> Songs </option>
-					<option value="TV Show CLips" name="Category"> TV Show Clips</option>
+					<option value="TV Show" name="Category"> TV Show </option>
+					<option value="Music" name="Category"> Music </option>
+					<option value="Sports" name="Category"> Sports </option>
+					<option value="Images And Gifs" name="Category"> Images and Gifs </option>
+					<option value="Other" name="Category"> Others </option>
 				</select>
 				</td>
 			</tr>	

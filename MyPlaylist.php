@@ -42,7 +42,7 @@
 									<div class="panel-body">
 										<ul class="list-group">
 											<?php while($media_row = mysqli_fetch_assoc($my_playlist_media)) { ?>
-												<a href="MyUploadsView.php?m_id=<?= $media_row['m_id'] ?>">
+												<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
 													<li class="list-group-item"><?= $media_row['m_title'] ?></li>
 												</a>
 											<?php } ?>

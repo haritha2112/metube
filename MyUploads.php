@@ -77,7 +77,7 @@
 									</td>
 									<td><p><?= $row['description'] ?></p></td>
 									<td><p><?= $row['category'] ?></p></td>
-									<td><p><?= $row['m_date'] ?></p></td>
+									<td><p><?= substr($row['m_date'], 0, 10) ?></p></td>
 									<td>
 										<?php if ($row['share_type'] == 0) { ?>
 											<p> Yes </p>
@@ -154,7 +154,7 @@
 									</td>
 									<td><p><?= $row['description'] ?></p></td>
 									<td><p><?= $row['category'] ?></p></td>
-									<td><p><?= $row['m_date'] ?></p></td>
+									<td><p><?= substr($row['m_date'], 0, 10) ?></p></td>
 									<td>
 										<?php if ($row['share_type'] == 0) { ?>
 											<p> Yes </p>
@@ -231,7 +231,7 @@
 									</td>
 									<td><p><?= $row['description'] ?></p></td>
 									<td><p><?= $row['category'] ?></p></td>
-									<td><p><?= $row['m_date'] ?></p></td>
+									<td><p><?= substr($row['m_date'], 0, 10) ?></p></td>
 									<td>
 										<?php if ($row['share_type'] == 0) { ?>
 											<p> Yes </p>

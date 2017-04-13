@@ -28,3 +28,12 @@ body {
 		-webkit-border-radius: 10px;
 		margin:10px
 	}
+
+textarea.form-control {
+	width: 350px;
+    position: relative;
+	height: inherit;
+	-webkit-box-align: center;
+	margin-left: 220px;
+	display: inline-block;
+	}
