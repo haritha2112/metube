@@ -1,2 +1,0 @@
-Media_Uploads/*
-!Media_Uploads/.gitkeep
