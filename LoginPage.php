@@ -1,11 +1,4 @@
-<html>
-	<head>
-		<title> MeTube Login Page </title>	
-		<link rel="stylesheet" href="CSS/LoginPage.css">	
-	</head>
-	<body align = "center">
-	<?php
-	
+<?php
 	include_once "function.php";
 
 	if(isset($_POST['Submit'])) {
@@ -13,7 +6,7 @@
 			$login_error = "One or more fields are missing.";
 		}
 		else {
-			$check = user_pass_check($_POST['username'],$_POST['pwd']); // Call functions from function.php
+			$check = user_pass_check($_POST['username'],$_POST['pwd']); //Function to check login credentials
 			if($check == 1) {
 				$login_error = "User ".$_POST['username']." not found.";
 			}
@@ -27,28 +20,79 @@
 				echo "session started";
 				header('Location: Home.php');
 			}		
-		 }
+		}
 	}
-	?>
-		<div class = "container" >
-			<div class = "Login">
-				<br><br><br><br>
-				<h1> MeTube </h1>
-				<br>
-				<h2> Login </h2>
-				<form action="" method = "POST">
-					<label> UserName: </label><input type = "text" name = "username" class = "box"/> <br><br>
-					<label> Password: </label><input type = "password" name = "pwd" class = "box"/> <br><br>
-					<input type = "submit" value = "submit" name = "Submit" /> <br>
-				</form>
+?>
+<!-- Login Page -->
+<html>
+	<head>
+		<title> MeTube Login Page </title>
+		<link rel="stylesheet" href="CSS/bootstrap.min.css">
+		<script src="js/jquery-3.2.0.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<style>
+			.logo {
+				height: auto;
+				width: 120px;
+			}
+			.login-div {
+				height: 48%;
+			}
+			.register {
+				font-size: 17px !important;
+			}
+			.main-title {
+				font-size: 63px;
+			}
+			.main-content {
+				margin-top: 2%;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-2">
+					<img src="images/Logo.png" class="logo pull-right">
+				</div>
+				<div class="col-md-10">
+					<h1 class="pull-left main-title">MeTube</h1>
+				</div>
 			</div>
-			<div class = "NewUser">
-				<p> New User? <a href = "Register.php"> Register Now! </a>
+			<div class="row text-center">
+				<div class="main-content">
+					<div class="col-md-offset-2 col-md-8">
+						<?php if(isset($login_error)){ ?>
+								<div class="alert alert-danger fade-in">
+									<a href="#" class="close" data-dismiss="alert">&times;</a>
+									<strong> <?= $login_error ?> </strong>
+								</div>
+						<?php } ?>
+					</div>
+					<div class="row">
+						<div class="col-md-offset-3 col-md-6 text-center main-content jumbotron">
+						<h2> Login </h2>
+							<form action="" method = "POST">
+								<table class = "table" align = "center">
+									<tbody>
+										<tr>
+											<td> <label> UserName </label> </td>
+											<td> <input type = "text" name = "username" class = "form-control"/> </td>
+										</tr>
+										<tr>
+											<td> <label> Password </label> </td>
+											<td> <input type = "password" name = "pwd" class = "form-control"/></td>
+										</tr>
+									</tbody>
+								</table>
+								<input class="btn btn-primary" type="submit" value = "Login" name = "Submit" /> <br/> <br/>
+								<p class="register"> New User? <a href = "Register.php"> Register Now! </a> </p>								
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>
-<?php
-  if(isset($login_error))
-   {  echo "<div id='passwd_result'>".$login_error."</div>";}
-?>
 </html>

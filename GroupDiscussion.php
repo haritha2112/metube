@@ -22,86 +22,214 @@
 		$owner_u_id = $_POST['owner_u_id'];
 		send_group_message($g_id, $message, $owner_u_id, $current_id, $g_topic);
 	}
+	
+	if(isset($_POST['Delete'])){
+		$gmsg_id = $_POST['gmsg_id'];
+		$g_id = $_POST['g_id'];
+		$owner_u_id = $_POST['u_id'];
+		$g_topic = $_POST['g_topic'];
+		delete_group_message($gmsg_id, $g_id, $owner_u_id, $g_topic);
+	}
 
 ?>
 <html>
 	<head>
 		<title> Group Discussion </title>
-		<link rel="stylesheet" href="CSS/GroupDiscussion.css">
+		<link rel="stylesheet" href="CSS/bootstrap.min.css">
+		<script src="js/jquery-3.2.0.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<style>
+			.logo {
+				height: auto;
+				width: 100px;
+			}
+			.main-title {
+				font-size: 45px;
+			}
+			.sub-title {
+				margin-top: 4%;
+				padding-left: 35%;
+				text-align: center;
+			}
+			.main-content {
+				padding-top: 3%;
+			}
+			.logout{
+				margin-top: 20%;
+			}
+			.sub-title-button {
+				margin-top: 3%;
+			}
+			.select-bar {
+				margin-top: 2%;
+			}
+			th {
+				text-align: center;
+				padding-top: 1% !important;
+				padding-bottom: 1% !important;
+				font-size: 16px;
+				background: #428bca;
+				color: white
+			}
+			td {
+				text-align: center;
+				font-size: 14px !important;
+				word-break: break-all;
+				word-wrap: break-word;
+			}
+			table {
+				background: lightgray;
+				border-radius: 20px;
+			}
+		</style>
 		<meta http-equiv="pragma" content="no-cache" />
 	</head>
-	<body align = "center">
-		<h1 align = "center"> <b> MeTube </b> </h1>
-		<form class = "BackHome" name="BackHome" method="post" action="Home.php">
-			<input type="submit" value="Home" name = "Submit"/>
-		</form>
-		<hr>
-		<form class = "BackGroup" name="BackGroup" method="post" action="Groups.php">
-			<input  type="submit" value="Back" name = "Submit"/>
-		</form>
-		<?php
-			$current_uid = get_current_uid($_SESSION['username']);
-			if($current_uid == $_GET['owner_u_id']) {
-				echo "<form method='get' action=''>
-						<label> Choose	</label>
-						<select name='SearchOption'>
-							<option value = 'CONTACT' name = 'SearchOption'> My Contacts </option>
-							<option value = 'FRIEND' name = 'SearchOption'> My Friends </option>
-							<option value = 'FAMILY' name = 'SearchOption'> My Family </option>
-						</select>
-						<input  type='submit' value='Go' name = 'Search'/>
-						<input type='hidden' name='g_id' value='".$_GET['g_id']."' />
-						<input type='hidden' name='owner_u_id' value='".$_GET['owner_u_id']."' />
-						<input type='hidden' name='g_topic' value='".$_GET['g_topic']."' />
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-2">
+					<img src="images/Logo.png" class="logo pull-right">
+				</div>
+				<div class="col-md-9">
+					<h1 class="pull-left main-title">MeTube</h1>
+				</div>
+				<div class="col-md-1">
+					<form class = "logout" name="Logout" method="post" action="">
+						<input class="btn btn-basic pull-right logout" type="submit" value="Logout" name="logout" />
 					</form>
-					";
-					if(isset($_GET['Search'])){
-						$search_results = retrive_contact($current_uid, $_GET['SearchOption']);
-						while($row = mysqli_fetch_assoc($search_results)) {
-							echo "<table class = 'navigation-grid' align = 'center'>
+				</div>
+			</div>
+			<hr/>
+			<div class="row">
+				<div class="col-md-9">
+					<h1 class="sub-title"> Group Discussion </h1>
+				</div>
+				<div class="col-md-3 sub-title-button">
+					<form name="BackMessage" method="get" action="Groups.php">
+						<input class="btn btn-primary pull-right" type="submit" value="Back" name = "Profile"/>
+					</form>
+				</div>
+			</div>
+			<div class="row main-content">
+				<div class="col-md-4">
+					<?php
+						$current_uid = get_current_uid($_SESSION['username']);
+						if($current_uid == $_GET['owner_u_id']) { ?>
+							<div class="row main-content text-center">
+								<div class="col-md-12">
+									<form class="form-inline" method='get' action=''>
+										<div class="form-group">
+											<label for="SearchOption"> Choose </label>
+											<select class="form-control" id="SearchOption" name='SearchOption'>
+												<option value = 'CONTACT' name = 'SearchOption'> My Contacts </option>
+												<option value = 'FRIEND' name = 'SearchOption'> My Friends </option>
+												<option value = 'FAMILY' name = 'SearchOption'> My Family </option>
+											</select>
+										</div>
+										<input class="btn btn-basic" type='submit' value='Go' name = 'Search'/>
+										<input type='hidden' name='g_id' value='<?= $_GET['g_id'] ?>' />
+										<input type='hidden' name='owner_u_id' value='<?= $_GET['owner_u_id'] ?>' />
+										<input type='hidden' name='g_topic' value='<?= $_GET['g_topic'] ?>' />
+									</form>
+								</div>
+							</div>
+							<hr/>
+							<div class="row">
+								<div class="col-md-12">
+									<?php
+									if(isset($_GET['Search'])){ ?>
+										<table class ='table table-striped' align = 'center'>
+											<thead>
+												<tr>
+													<th><i>Username</i></th>
+													<th><i>Name</i></th>
+													<th><i>Action</i></th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php
+												$search_results = search_group_contact($current_uid, $_GET['SearchOption'], $_GET['g_id']);
+												while($row = mysqli_fetch_assoc($search_results)) { ?>
+													<tr>
+														<td><?= $row['uname'] ?></td>
+														<td><?= $row['fname'] ?> <?= $row['lname'] ?></td>
+														<td>
+															<form action = '' method = 'post'>
+																<input class="btn btn-info" type='submit' name='AddToGroup' value='Add To Group' />
+																<input type='hidden' name='u_id' value='<?= $row['u_id'] ?>' />
+																<input type='hidden' name='g_id' value='<?= $_GET['g_id'] ?>' />
+																<input type='hidden' name='g_topic' value='<?= $_GET['g_topic'] ?>' />
+																<input type='hidden' name='owner_u_id' value='<?= $_GET['owner_u_id'] ?>' />
+															</form>
+														</td>
+													</tr>
+												<?php } ?>
+											</tbody>
+										</table>
+									<?php } ?>
+								</div>
+							</div>
+						<?php } 
+					?>
+					<hr/>
+					<div class="row">
+						<div class="col-md-12">
+							<h4> Group Users </h4>
+							<ul>
+								<?php 
+									$group_users = fetch_group_users($_GET['g_id']);
+									while($row = mysqli_fetch_assoc($group_users)) { ?>
+										<li><?= $row['fname'] ?> <?= $row['lname'] ?> (<?= $row['uname'] ?>)</li>
+								<?php } ?>
+							</ul>							
+						</div>
+					</div>
+				</div>
+				<div class="col-md-offset-1 col-md-7 text-center">
+					<h2><?= $_GET['g_topic'] ?></h2>
+					<hr/>
+					<form method='POST'>
+						<table class="table">
+							<thead>
 								<tr>
 									<th><i>Username</i></th>
-									<th><i>Firstname</i></th>
-									<th><i>Lastname</i></th>
+									<th><i>Message</i></th>
+									<th><i>Date</i></th>
 									<th><i>Action</i></th>
 								</tr>
-								<tr>
-								<td class = 'grid-item'>".$row['uname']."</td>
-								<td class = 'grid-item'>".$row['fname']."</td>
-								<td class = 'grid-item'>".$row['lname']."</td>
-								<td>
-									<form action = '' method = 'post'>
-										<input type='submit' name='AddToGroup' value='Add To Group' />
-										<input type='hidden' name='u_id' value='".$row['u_id']."' />
-										<input type='hidden' name='g_id' value='".$_GET['g_id']."' />
-										<input type='hidden' name='g_topic' value='".$_GET['g_topic']."' />
-										<input type='hidden' name='owner_u_id' value='".$_GET['owner_u_id']."' />
-									</form>
-								</td>
-							</tr>
-							</table>";
-						}
-					}
-			}
-			echo "<hr/>";
-			echo "<h3>".$_GET['g_topic']."</h3>";
-			$result = retrieve_group_messages($_GET['g_id']);
-			while($row = mysqli_fetch_assoc($result)){
-				echo "<div>
-				<p>".$row['uname']."   |   ".$row['fname']." ".$row['lname']."</p>
-				<p>".$row['message']."</p>
-				<p>".substr($row['gmsg_date'], 0, 10)."</p>
-				</div>";
-			}
-			
-			echo" <form method='post' action=''>
-					<input type='text' name='message' placeholder='Enter your message here' />
-					<input type='submit' name='SendGroupMessage' value='Send' />
-					<input type='hidden' name='g_id' value='".$_GET['g_id']."' />
-					<input type='hidden' name='g_topic' value='".$_GET['g_topic']."' />
-					<input type='hidden' name='owner_u_id' value='".$_GET['owner_u_id']."' />
-				</form>
-				";
-		?>
+							</thead>
+							<tbody>
+								<?php 
+									$result = retrieve_group_messages($_GET['g_id']);
+									while($row = mysqli_fetch_assoc($result)){ ?>
+										<tr>
+											<td><?= $row['uname'] ?></td>
+											<td><?= $row['message'] ?></td>
+											<td><?= substr($row['gmsg_date'], 0, 10) ?></td>
+											<?php
+												if($row['u_id'] == $current_uid) { ?> 
+												<td>
+													<input class="btn btn-danger Delete" type='submit' name='Delete' value='Delete' />
+													<input type='hidden' name='gmsg_id' value=<?=$row['gmsg_id'] ?> />
+													<input type='hidden' name='g_id' value=<?=$row['g_id']?> />
+													<input type='hidden' name='u_id' value=<?=$row['u_id']?> />
+													<input type='hidden' name='g_topic' value=<?=$row['g_topic']?> />
+												</td>
+											<?php } ?>
+										</tr>
+								<?php } ?>
+							</tbody>
+						</table>
+					</form>
+					<form class="form-inline" method='post' action=''>
+							<input class="form-control" type='text' name='message' placeholder='Enter your message here' />
+							<input class="btn btn-info" type='submit' name='SendGroupMessage' value='Send' />
+							<input type='hidden' name='g_id' value='<?= $_GET['g_id'] ?>' />
+							<input type='hidden' name='g_topic' value='<?= $_GET['g_topic'] ?>' />
+							<input type='hidden' name='owner_u_id' value='<?= $_GET['owner_u_id'] ?>' />
+					</form>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

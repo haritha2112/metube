@@ -235,7 +235,7 @@ function create_group($u_id,$group_topic){
 function add_user_to_group($g_id, $u_id, $owner_u_id, $g_topic) {
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "insert into GROUP_USERS (g_id, u_id) values ('$g_id','$u_id')";
+	$query = "insert into GROUP_USERS (g_id, u_id) values ('$g_id','$u_id') on duplicate key update u_id=$u_id";
 	$result = mysqli_query($con,$query);
 	if(!$result){
 		die ("Failed. Could not insert into the database: <br />". mysql_error());
@@ -270,7 +270,9 @@ function send_group_message($g_id, $message, $owner_u_id, $u_id, $g_topic){
 function retrieve_group_messages($g_id){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "select uname, fname, lname, message, gmsg_date from GROUP_MESSAGE A, USER B where g_id = '$g_id' and A.u_id = B.u_id order by gmsg_date";
+	$query = "select uname, fname, lname, message, gmsg_date, gmsg_id, A.g_id, A.u_id, C.g_id, g_topic  
+				from GROUP_MESSAGE A, USER B, GROUPS C
+				where A.g_id = '$g_id' and C.g_id = '$g_id' and A.u_id = B.u_id order by gmsg_date";
 	$result = mysqli_query($con, $query);
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
@@ -278,6 +280,41 @@ function retrieve_group_messages($g_id){
 	else {
 		return $result;
 	}
+}
+
+function delete_group_message($gmsg_id, $g_id, $owner_u_id, $g_topic){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from GROUP_MESSAGE where gmsg_id = $gmsg_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not delete from database: <br />". mysql_error());
+	}
+	header('Location: GroupDiscussion.php?g_id='.$g_id.'&owner_u_id='.$owner_u_id.'&g_topic='.$g_topic.'');
+}
+
+function search_group_contact($current_uid, $type, $group_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select u_id, uname, fname, lname from USER, CONTACT
+				where u_id1 = ".$current_uid." and u_id2 = u_id and type = '".$type."' and 
+				u_id2 not in (select u_id from GROUP_USERS where g_id=".$group_id." and u_id!=".$current_uid.")";
+	$result = mysqli_query($con,$query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function fetch_group_users($g_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select U.fname as fname, U.lname as lname, U.uname as uname from GROUP_USERS G, USER U where G.g_id=".$g_id." and U.u_id = G.u_id";
+	$result = mysqli_query($con,$query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
 }
 
 function add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $ownerid){
@@ -314,6 +351,55 @@ function retrive_my_uploads($owner_u_id, $mediatype){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 	return $result;
+}
+
+function edit_meta_data($m_id, $description, $share_type, $download_type, $rate, $comment){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$update = "update MEDIA set description='$description', share_type=$share_type, download_type=$download_type, allow_commenting=$comment,
+				allow_rating=$rate where m_id=$m_id";
+	$result = mysqli_query($con, $update);
+	if (!$result){
+		die ("Failed. Could not update the database: <br />". mysql_error());
+	}
+	header('Location: MyUploads.php');
+}
+
+function get_media_owner($mid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select owner_u_id from MEDIA where m_id = '$mid'";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$row = mysqli_fetch_array($result);
+	return $row['owner_u_id'];
+}
+
+function is_media_private($mid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select count(*) from MEDIA where m_id=$mid and share_type=1";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$row = mysqli_fetch_array($result);
+	return $row[0] > 0;
+}
+
+function user_has_access($mid, $current_uid){
+	$media_owner_id = get_media_owner($mid);
+	if ($media_owner_id == $current_uid) {
+		return true;
+	}
+	else if (check_blocked_user($media_owner_id, $current_uid)) {
+		return false;
+	}
+	else {
+		return !is_media_private($mid);
+	}
 }
 
 function add_media_favourites($m_id, $u_id){
@@ -420,7 +506,7 @@ function get_recent_uploads(){
 function create_new_channel($current_uid, $c_name, $c_description){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "insert into CHANNEL (c_name, c_description, owner_u_id) values ('$c_name', '$c_description', $current_uid) ";
+	$query = "insert into CHANNEL (c_name, c_description, owner_u_id) values ('$c_name', '$c_description', $current_uid)";
 	$result = mysqli_query($con, $query);
 	if (!$result){
 		die ("Failed. Could not insert into the database: <br />". mysql_error());
@@ -437,6 +523,73 @@ function get_my_channels($current_uid) {
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 	return $result;
+}
+
+function get_unsubscribed_channels($current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select c_id, c_name, c_description from CHANNEL where owner_u_id != $current_uid and c_id not in 
+				(select c_id from CHANNEL_SUBSCRIBERS where u_id = $current_uid)";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function get_subscribed_channels($current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select C.c_id, c_name, c_description from CHANNEL C, CHANNEL_SUBSCRIBERS CS where C.c_id = CS.c_id and CS.u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function subscribe_to_channel($c_id, $current_uid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into CHANNEL_SUBSCRIBERS (c_id, u_id) values ($c_id, $current_uid) on duplicate key update u_id=$current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: SubscribedChannels.php');
+}
+
+function unsubscribe_from_channel($c_id, $current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from CHANNEL_SUBSCRIBERS where c_id = $c_id and u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: SubscribedChannels.php');
+}
+
+function delete_playlist($p_id, $current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from PLAYLIST where p_id = $p_id and u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyPlaylist.php');
+}
+
+function delete_playlist_media($p_id, $m_id) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from PLAYLIST_MEDIA where p_id = $p_id and m_id = $m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyPlaylist.php');
 }
 
 function get_channel_media($c_id){
@@ -462,6 +615,13 @@ function add_to_channel($c_id, $m_id){
 }
 
 function delete_media($m_id){
+	$item = fetch_media($m_id);
+	$owner_u_id = $item['owner_u_id'];
+	$extension = $item['extension'];
+	$file = 'Media_Uploads/'.$owner_u_id.'/'.$m_id.'.'.$extension;
+	if (!unlink($file)) {
+		die("Failed to delete");
+	}
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
 	$query = "delete from MEDIA where m_id = $m_id";
@@ -493,18 +653,6 @@ function display_meta_data($mid){
 	}
 	$row = mysqli_fetch_array($result);
 	return $row;
-}
-
-function check_allow_commenting($mid){
-	require "config.php";
-	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "select allow_commenting from MEDIA where m_id = $mid";
-	$result = mysqli_query($con, $query);
-	if (!$result){
-		die ("Failed. Could not query the database: <br />". mysql_error());
-	}
-	$row = mysqli_fetch_array($result);
-	return $row; 
 }
 
 function retrieve_media_comment($mid){
@@ -554,46 +702,117 @@ function get_media_by_categories($media_category){
 function most_viewed_media($u_id){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "select * from MEDIA, CONTACT where share_type = '0' and CONTACT.u_id2 != $u_id and CONTACT.type != 'BLOCKED' order by view_count DESC";
+	$query = "select * from MEDIA where share_type = '0' order by view_count DESC";
 	$result = mysqli_query($con, $query);
-	$row = mysqli_fetch_array($result);
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 	return $result;
 }
 
-function updateMediaTime($mediaid)
-{
-	$query = "	update  media set lastaccesstime=NOW()
-   						WHERE '$mediaid' = mediaid
-					";
-					 // Run the query created above on the database through the connection
-    $result = mysql_query( $query );
-	if (!$result)
-	{
-	   die ("updateMediaTime() failed. Could not query the database: <br />". mysql_error());
+function check_blocked_user($u_id1, $u_id2){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select count(*) from CONTACT where u_id1=$u_id1 and u_id2=$u_id2 and type='BLOCKED'";
+	$result = mysqli_query($con, $query);
+	
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	$row = mysqli_fetch_array($result);
+	return $row[0] > 0;
+}
+
+function get_rating($mid, $current_uid){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "select rating from MEDIA_RATING where m_id = $mid and u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	if(mysqli_num_rows($result) == 0){
+		return 0;
+	} 
+	else {
+		$row = mysqli_fetch_assoc($result);
+		return $row['rating'];
 	}
 }
 
-function upload_error($result)
-{
-	switch ($result){
-	case 1:
-		return "UPLOAD_ERR_INI_SIZE";
-	case 2:
-		return "UPLOAD_ERR_FORM_SIZE";
-	case 3:
-		return "UPLOAD_ERR_PARTIAL";
-	case 4:
-		return "UPLOAD_ERR_NO_FILE";
-	case 5:
-		return "File has already been uploaded";
-	case 6:
-		return  "Failed to move file from temporary directory";
-	case 7:
-		return  "Upload file failed";
+function rate_media($mid, $rating, $u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "insert into MEDIA_RATING (rating, m_id, u_id) values ($rating, $mid, $u_id) on duplicate key update rating=$rating";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 }
 
+function browseMedia($find,$feature){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$current_uid = get_current_uid($_SESSION['username']);
+	
+	$query = "Select * from SEARCH where keyword='$find' and u_id=$current_uid ";
+	
+	$result = mysqli_query($con, $query);
+	if (mysqli_num_rows($result) > 0) {   
+		$query = "update SEARCH set count = (count+1) where keyword='$find' and u_id=$current_uid";
+		$result = mysqli_query($con, $query);
+	} else {
+		$query = "Insert into SEARCH (u_id, keyword, count) values($current_uid, '$find', 1)";
+		$result = mysqli_query($con, $query);
+	}
+	
+	if($feature == "title") {
+		$query = "Select * from MEDIA where lower(m_title) LIKE lower('%".$find."%') AND share_type = 0";
+	} else {
+		$query = "Select * from MEDIA where lower($feature) LIKE lower('%".$find."%') AND share_type = 0";
+	}
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	return $result;
+}
+
+function recommendation(){
+	require "config.php";
+	$con = mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$current_uid = get_current_uid($_SESSION['username']);
+	$query = "select keyword from SEARCH where u_id=$current_uid order by count desc LIMIT 20";
+	$result = mysqli_query($con,$query);
+	
+	$keywords = [];
+	while ($k = mysqli_fetch_assoc($result)){
+		$query = "select m_id,m_title from MEDIA where m_title LIKE '%".$k['keyword']."%' or description LIKE '%".$k['keyword']."%' AND share_type = 0";
+		$r = mysqli_query($con,$query);	
+		while($media_row = mysqli_fetch_assoc($r)){
+			$keywords[$media_row['m_id']][] = $media_row['m_title'];
+		}
+	}
+	return array_slice($keywords, 0, 20);
+}
+
+function wordCloud(){
+ 	require "config.php";
+	$con = mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$current_uid = get_current_uid($_SESSION['username']);
+	
+	$query = "select keyword,count from SEARCH order by count desc";
+	$result = mysqli_query($con,$query);
+	
+	$keywords = [];
+	while ($k = mysqli_fetch_assoc($result)){
+		$query = "select m_id,m_title from MEDIA where m_title LIKE '%".$k['keyword']."%' or description LIKE '%".$k['keyword']."%' AND share_type = 0 LIMIT 1";
+		$r = mysqli_query($con,$query);	
+		while($media_row = mysqli_fetch_assoc($r)){
+			$keywords[$k['keyword']][] = $media_row['m_id'];
+		}
+	}
+	return array_slice($keywords, 0, 20);
+}
 ?>
+
