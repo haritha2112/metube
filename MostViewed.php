@@ -73,7 +73,7 @@
 			<div class="row">
 				<div class="col-md-10">
 					<div class="list-group">
-						<button type="button" class="list-group-item list-group-item-action active">
+						<div class="list-group-item list-group-item-action active">
 							<?php while($media_row = mysqli_fetch_assoc($most_viewed_media)) { 
 								if(!check_blocked_user($media_row['owner_u_id'], $current_uid)) { ?>
 								<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
@@ -81,7 +81,7 @@
 								</a>
 								<?php } 
 							} ?>
-						</button>
+						</div>
 					</div>
 				</div>
 			</div>

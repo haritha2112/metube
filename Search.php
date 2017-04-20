@@ -148,9 +148,9 @@
 									if(isset($_GET["Search"])) {
 										$search_text = trim($_GET['SearchText']);
 										$feature = trim($_GET['Feature']);
+										$found = false;
 										if ($search_text != "") {
 											$keywords = explode(" ",$search_text);
-											$found = false;
 											foreach($keywords as $keyword) {
 												$getSearchMedia = browseMedia($keyword, $feature);
 												if(mysqli_num_rows($getSearchMedia) > 0) {	

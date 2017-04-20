@@ -86,13 +86,6 @@
 				.sub-title-button {
 					margin-top: 3%;
 				}
-				.list-group{
-					margin-top: 1%;
-					margin-left: 20%;
-				}
-				.list-group-item{
-					text-align: center;
-				}
 				.upload-button{
 					text-align: center;
 				}

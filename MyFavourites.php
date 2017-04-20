@@ -84,7 +84,7 @@
 			<div class="row">
 				<div class="col-md-10">
 					<div class="list-group">
-						<button type="button" class="list-group-item list-group-item-action active">
+						<div class="list-group-item list-group-item-action active">
 							<?php
 								while($media_row = mysqli_fetch_assoc($my_favourite_media)) { ?>
 									<div class="row">
@@ -101,7 +101,7 @@
 										</div>
 									</div>
 							<?php } ?>
-						</button>
+						</div>
 					</div>
 				</div>
 
