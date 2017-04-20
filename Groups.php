@@ -11,6 +11,18 @@
 		$group_topic = $_POST['GroupTopic'];
 		create_group($u_id,$group_topic);
 	}
+	
+	if(isset($_POST['DeleteGroup'])) {
+		$g_id = $_POST['g_id'];
+		delete_group($g_id);
+	}
+	
+	if(isset($_POST['LeaveGroup'])) {
+		$u_id = get_current_uid($_SESSION['username']);
+		$g_id = $_POST['g_id'];
+		remove_user_from_group($u_id, $g_id);
+		header('Location: Groups.php');
+	}
 ?>
 <html>
 	<head>
@@ -94,7 +106,7 @@
 					<form class="form-inline" name="CreateGroup" method="post" action="">
 						<div class="form-group">
 							<label for="group-name"> Group Name </label>
-							<input id="group-name" class="form-control" type="text" name="GroupTopic" placeholder="Enter the group's topic" />
+							<input id="group-name" class="form-control" type="text" name="GroupTopic" placeholder="Enter the group's topic" required />
 						</div>
 						<input class="btn btn-basic create_group" type="submit" value="Create New Group" name = "CreateGroup"/>
 					</form>
@@ -108,6 +120,7 @@
 								<th><i> Group Topic </i></th>
 								<th><i> Date Created </i></th>
 								<th><i> View </i></th>
+								<th><i> Action </i></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -124,6 +137,16 @@
 												<input type='hidden' name='g_id' value='<?= $row['g_id'] ?>' />
 												<input type='hidden' name='g_topic' value='<?= $row['g_topic'] ?>' />
 												<input type='hidden' name='owner_u_id' value='<?= $row['owner_u_id'] ?>' />
+											</td>
+										</form>
+										<form method="post" action="" onsubmit="return confirm('Are you sure you want to proceed?')">
+											<td>
+												<input type='hidden' name='g_id' value='<?= $row['g_id'] ?>' />
+												<?php if ($row['owner_u_id'] == $current_uid) { ?>
+													<input class="btn btn-danger" type='submit' name='DeleteGroup' value='Delete' />
+												<?php } else { ?>
+													<input class="btn btn-danger" type='submit' name='LeaveGroup' value='Leave' />
+												<?php } ?>
 											</td>
 										</form>
 									</tr>

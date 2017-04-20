@@ -12,6 +12,18 @@
 		$c_description = $_POST['ChannelDescription'];
 		create_new_channel($current_uid, $c_name, $c_description);
 	}
+	
+	if(isset($_POST['delete_channel_button'])){
+		$c_id = $_POST['c_id'];
+		$current_uid = get_current_uid($_SESSION['username']);
+		delete_channel($c_id, $current_uid);
+	}
+	
+	if(isset($_POST['DeleteMedia'])){
+		$c_id = $_POST['c_id'];
+		$m_id = $_POST['m_id'];
+		delete_channel_media($c_id, $m_id);
+	}
 ?>
 <html>
 	<head>
@@ -45,6 +57,12 @@
 			}
 			.add-channel-div {
 				margin-top:2%;
+			}
+			.delete-channel-button {
+				margin-top: -17px;
+			}
+			.delete-media-button {
+				margin-top: 10px;
 			}
 		</style>
 	</head>
@@ -93,6 +111,10 @@
 								<div class="panel-heading">
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $row['c_id'] ?>"> <?= $row['c_name'] ?> </a>
+										<form method="post" action="" onsubmit="return confirm('Are you sure you want to proceed?')">
+											<button type="submit" class="btn btn-danger pull-right delete-channel-button" name="delete_channel_button">Delete</button>
+											<input type="hidden" name="c_id" value="<?= $row['c_id'] ?>" />
+										</form>
 									</h4>
 								</div>
 								<div id="collapse<?= $row['c_id'] ?>" class="panel-collapse collapse" aria-expanded="false">
@@ -100,9 +122,20 @@
 										<p> <?= $row['c_description'] ?> </p>
 										<ul class="list-group">
 											<?php while($media_row = mysqli_fetch_assoc($my_channel_media)) { ?>
-												<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
-													<li class="list-group-item"><?= $media_row['m_title'] ?></li>
-												</a>
+												<div class="row">
+													<div class="col-md-10">
+														<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
+															<li class="list-group-item"><?= $media_row['m_title'] ?></li>
+														</a>
+													</div>
+													<div class="col-md-2 delete-media-button">
+														<form method="POST" onsubmit="return confirm('Are you sure you want to proceed?')">
+															<input type="hidden" name="m_id" value="<?= $media_row['m_id'] ?>" />
+															<input type="hidden" name="c_id" value="<?= $row['c_id'] ?>" />
+															<button class="glyphicon glyphicon-trash" type="submit" name="DeleteMedia" value="X" ></button>
+														</form>
+													</div>
+												</div>
 											<?php } ?>
 										</ul>
 									</div>
@@ -126,7 +159,7 @@
 						<form method='post'>
 							<div class='form-group'>
 								<label for="ChannelName" class="form-control-label">Enter Channel Name</label>
-								<input type='text' id="ChannelName" class="form-control" name='ChannelName'/>
+								<input type='text' id="ChannelName" class="form-control" placeholder="No special characters" name='ChannelName'/>
 							</div>
 							<div class='form-group'>
 								<label for="ChannelDescription" class="form-control-label">Give a Description</label>

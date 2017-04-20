@@ -38,24 +38,6 @@
 		$m_id = $_POST['m_id'];
 		delete_media_comment($mc_id, $m_id);
 	}
-	
-	if(isset($_POST['Download'])){
-		$mid = $_POST['m_id'];
-		$item = fetch_media($mid);
-		$owner_u_id = $item['owner_u_id'];
-		$extension = $item['extension'];
-		$file = 'Media_Uploads/'.$owner_u_id.'/'.$mid.'.'.$extension;
-		header('Content-Description: File Transfer');
-		header('Content-Type: application/octet-stream');
-		header('Content-Disposition: attachment; filename='.basename($file));
-		header('Content-Transfer-Encoding: binary');
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
-		header('Content-Length: ' . filesize($file));
-		@readfile($file);
-	}
-
 ?>
 <html>
 	<head>
@@ -260,7 +242,7 @@
 												<h5><strong>Download is disabled</strong></h5>
 										<?php }
 										else { ?>
-											<form method = 'POST'>
+											<form method = 'GET' action="Download.php">
 												<input class="btn btn-success" type='submit' value='Download' name='Download'/>
 												<input type='hidden' value='<?= $mid ?>' name='m_id'>
 											</form>
@@ -274,7 +256,7 @@
 									<img class='display-image' src='<?= $url ?>'/>
 								<?php }
 								else if ($item['media_type'] == "Video"){ ?>
-									<video class='display-video' src='<?= $url ?>' width='560' height='315' frame='2' controls></video>
+									<video class='display-video' src='<?= $url ?>' width='560' height='315' frame='2' type="video/<?=$item['extension'] ?>" controls></video>
 								<?php }
 								else if ($item['media_type'] == "Audio"){ ?>
 									<audio class='display-audio' src="<?= $url ?>" controls></audio>

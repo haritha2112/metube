@@ -180,6 +180,17 @@ function update_contact_type($current_id, $u_id, $type){
 	header('Location: MyPeople.php');
 }
 
+function delete_contact($current_uid, $u_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from CONTACT where u_id1 = $current_uid and u_id2 = $u_id";
+		$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyPeople.php');
+}
+
 function send_personal_message($from_u_id, $to_u_id, $message){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
@@ -232,6 +243,18 @@ function create_group($u_id,$group_topic){
 	header('Location: Groups.php');
 }
 
+
+function delete_group($g_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from GROUPS where g_id = $g_id";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not delete from the database: <br />". mysql_error());
+	}
+	header('Location: Groups.php');
+}
+
 function add_user_to_group($g_id, $u_id, $owner_u_id, $g_topic) {
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
@@ -241,6 +264,16 @@ function add_user_to_group($g_id, $u_id, $owner_u_id, $g_topic) {
 		die ("Failed. Could not insert into the database: <br />". mysql_error());
 	}
 	header('Location: GroupDiscussion.php?g_id='.$g_id.'&owner_u_id='.$owner_u_id.'&g_topic='.$g_topic.'');
+}
+
+function remove_user_from_group($u_id, $g_id){
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from GROUP_USERS where g_id = $g_id and u_id = $u_id";
+	$result = mysqli_query($con,$query);
+	if(!$result){
+		die ("Failed. Could not delete from the database: <br />". mysql_error());
+	}
 }
 
 function retrive_groups($u_id) {
@@ -309,7 +342,8 @@ function search_group_contact($current_uid, $type, $group_id){
 function fetch_group_users($g_id){
 	require "config.php";
 	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
-	$query = "select U.fname as fname, U.lname as lname, U.uname as uname from GROUP_USERS G, USER U where G.g_id=".$g_id." and U.u_id = G.u_id";
+	$query = "select U.u_id as u_id, U.fname as fname, U.lname as lname, U.uname as uname 
+				from GROUP_USERS G, USER U where G.g_id=".$g_id." and U.u_id = G.u_id";
 	$result = mysqli_query($con,$query);
 	if (!$result){
 		die ("Failed. Could not query the database: <br />". mysql_error());
@@ -326,7 +360,6 @@ function add_media($mediatitle, $description, $category, $extension, $mediatype,
 	if (!$result){
 		die ("Failed. Could not insert into the database: <br />". mysql_error());
 	}
-	header('Location: MediaUpload.php');
 	return mysqli_insert_id($con);
 }
 
@@ -423,6 +456,17 @@ function add_media_favourites($m_id, $u_id){
 		}
 	}
 	header('Location: MediaView.php?m_id='.$m_id);
+}
+
+function delete_favourite_media($u_id, $m_id) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from FAVOURITES where m_id = $m_id and u_id = $u_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyFavourites.php');
 }
 
 function recent_uploads(){
@@ -612,6 +656,28 @@ function add_to_channel($c_id, $m_id){
 		die ("Failed. Could not query the database: <br />". mysql_error());
 	}
 	header('Location: MyUploads.php');
+}
+
+function delete_channel($c_id, $current_uid) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from CHANNEL where c_id = $c_id and owner_u_id = $current_uid";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyChannels.php');
+}
+
+function delete_channel_media($c_id, $m_id) {
+	require "config.php";
+	$con=mysqli_connect($dbhost, $dbuser, $dbpass, $database);
+	$query = "delete from CHANNEL_MEDIA where c_id = $c_id and m_id = $m_id";
+	$result = mysqli_query($con, $query);
+	if (!$result){
+		die ("Failed. Could not query the database: <br />". mysql_error());
+	}
+	header('Location: MyChannels.php');
 }
 
 function delete_media($m_id){

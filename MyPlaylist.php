@@ -96,7 +96,7 @@
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $row['p_id'] ?>"> <?= $row['p_name'] ?> </a>
 										<form method="post" action="" onsubmit="return confirm('Are you sure you want to proceed?')">
-											<button type="submit" class="btn btn-danger pull-right delete-playlist-button" name="delete_playlist_button">Delete Playlist</button>
+											<button type="submit" class="btn btn-danger pull-right delete-playlist-button" name="delete_playlist_button">Delete</button>
 											<input type="hidden" name="p_id" value="<?= $row['p_id'] ?>" />
 										</form>
 									</h4>

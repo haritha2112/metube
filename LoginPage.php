@@ -31,6 +31,10 @@
 		<script src="js/jquery-3.2.0.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<style>
+			body {
+				background-image: url('images/background.jpg');
+				background-size: cover;
+			}
 			.logo {
 				height: auto;
 				width: 120px;
@@ -71,7 +75,7 @@
 						<?php } ?>
 					</div>
 					<div class="row">
-						<div class="col-md-offset-3 col-md-6 text-center main-content jumbotron">
+						<div class="col-md-offset-3 col-md-6 text-center main-content">
 						<h2> Login </h2>
 							<form action="" method = "POST">
 								<table class = "table" align = "center">

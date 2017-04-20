@@ -14,6 +14,15 @@
 		add_user_to_group($g_id, $u_id, $owner_u_id, $g_topic);
 	}
 	
+	if(isset($_POST['RemoveUser'])){
+		$g_id = $_POST['g_id'];
+		$u_id = $_POST['u_id'];
+		$g_topic = $_POST['g_topic'];
+		$owner_u_id = $_POST['owner_u_id'];
+		remove_user_from_group($u_id, $g_id);
+		header('Location: GroupDiscussion.php?g_id='.$g_id.'&owner_u_id='.$owner_u_id.'&g_topic='.$g_topic.'');
+	}
+	
 	if(isset($_POST['SendGroupMessage'])){
 		$g_id = $_POST['g_id'];
 		$message = $_POST['message'];
@@ -30,6 +39,7 @@
 		$g_topic = $_POST['g_topic'];
 		delete_group_message($gmsg_id, $g_id, $owner_u_id, $g_topic);
 	}
+	
 
 ?>
 <html>
@@ -175,13 +185,36 @@
 					<div class="row">
 						<div class="col-md-12">
 							<h4> Group Users </h4>
-							<ul>
-								<?php 
-									$group_users = fetch_group_users($_GET['g_id']);
-									while($row = mysqli_fetch_assoc($group_users)) { ?>
-										<li><?= $row['fname'] ?> <?= $row['lname'] ?> (<?= $row['uname'] ?>)</li>
-								<?php } ?>
-							</ul>							
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th><i>Username</i></th>
+										<?php if ($current_uid == $_GET['owner_u_id']) { ?>
+											<th><i>Action</i></th>
+										<?php } ?>
+									</tr>
+								</thead>
+								<tbody>
+									<?php 
+										$group_users = fetch_group_users($_GET['g_id']);
+										while($row = mysqli_fetch_assoc($group_users)) { ?>
+											<tr>
+												<td><?= $row['uname'] ?> </td>
+												<?php if($current_uid == $_GET['owner_u_id'] && $row['u_id'] != $current_uid) { ?> 
+													<form method="post" action="" onsubmit="return confirm('Are you sure you want to proceed?')">
+														<td>
+															<input class="btn btn-danger" type='submit' name='RemoveUser' value='Remove' />
+															<input type='hidden' name='u_id' value='<?= $row['u_id'] ?>' />
+															<input type='hidden' name='g_id' value='<?= $_GET['g_id'] ?>' />
+															<input type='hidden' name='g_topic' value='<?= $_GET['g_topic'] ?>' />
+															<input type='hidden' name='owner_u_id' value='<?= $_GET['owner_u_id'] ?>' />
+														</td>
+													</form>
+												<?php } ?>
+											</tr>
+									<?php } ?>
+								</tbody>
+							</table>			
 						</div>
 					</div>
 				</div>

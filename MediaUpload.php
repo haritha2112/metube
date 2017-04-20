@@ -6,10 +6,12 @@
 			$ownerid = get_current_uid($_SESSION['username']);
 			if(!file_exists('Media_Uploads/')){
 				mkdir('Media_Uploads/', 0755);	
+				chmod('Media_Uploads/', 0755);
 			}
 			$dirfile = 'Media_Uploads/'.$ownerid.'/';
 			if(!file_exists('Media_Uploads/'.$ownerid.'/')){
-				mkdir($dirfile, 0755);	
+				mkdir($dirfile, 0755);
+				chmod($dirfile, 0755);
 			}
 			$mediatitle = $_POST['Media_Title'];
 			$description = $_POST['Description'];
@@ -24,30 +26,36 @@
 			$tmp = $_FILES['file']['tmp_name'];
 			$path = $dirfile.urlencode($_FILES["file"]["name"]);
 			if($mediatitle == "" || $description == "" || $category == "" || $sharetype == "" || $downloadtype == "" || $comment == "" || $rate == "") {
-				$_SESSION['error_message'] = "Error! One or more fields are missing.";
+				$message = "Error! Media Format Not Supported!";
+				header('Location: MediaUpload.php?error='.urlencode($message));
 			}
-			$extension = pathinfo($filename, PATHINFO_EXTENSION);
-			$video_types = array('mp4', 'mpg', 'wma', 'mov', 'flv', 'avi', 'qt', 'wmv', 'mpeg');
-			$audio_types = array('mp3', 'ogg', 'wav');
-			$image_types = array('jpeg', 'gif', 'png', 'jpg', 'pjeg', 'img');
-			$allowed_types = array_merge($video_types, $audio_types, $image_types);
-			if(!in_array($extension, $allowed_types)) {
-				$_SESSION['error_message'] = "Error! Media Format Not Supported!";
-			}
-			else
-			{
-				$mediatype = "Unknown";
-				if (in_array($extension, $video_types)) {
-					$mediatype = 'Video';
-				} else if (in_array($extension, $audio_types)) {
-					$mediatype = 'Audio';
-				} else if (in_array($extension, $image_types)) {
-					$mediatype = 'Image';
+			else {
+				$extension = pathinfo($filename, PATHINFO_EXTENSION);
+				$video_types = array('mp4', 'mpg', 'wma', 'mov', 'flv', 'avi', 'qt', 'wmv', 'mpeg', 'webm');
+				$audio_types = array('mp3', 'ogg', 'wav');
+				$image_types = array('jpeg', 'gif', 'png', 'jpg', 'pjeg', 'img');
+				$allowed_types = array_merge($video_types, $audio_types, $image_types);
+				if(!in_array($extension, $allowed_types)) {
+					$message = "Error! Media Format Not Supported!";
+					header('Location: MediaUpload.php?error='.urlencode($message));
 				}
-				$media_id = add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $ownerid);
-				$path = 'Media_Uploads/'.$ownerid.'/'.$media_id.'.'.$extension;
-				move_uploaded_file($tmp, $path);
-				$_SESSION['success_message'] = "Media Uploaded Successfully!";
+				else
+				{
+					$mediatype = "Unknown";
+					if (in_array($extension, $video_types)) {
+						$mediatype = 'Video';
+					} else if (in_array($extension, $audio_types)) {
+						$mediatype = 'Audio';
+					} else if (in_array($extension, $image_types)) {
+						$mediatype = 'Image';
+					}
+					$media_id = add_media($mediatitle, $description, $category, $extension, $mediatype, $sharetype, $downloadtype, $comment, $rate, $ownerid);
+					$path = 'Media_Uploads/'.$ownerid.'/'.$media_id.'.'.$extension;
+					move_uploaded_file($tmp, $path);
+					chmod($path, 0755);
+					$message = "Media Uploaded Successfully!";
+					header('Location: MediaUpload.php?success='.urlencode($message));
+				}
 			}
 		}
 	}
@@ -119,32 +127,24 @@
 			<br>
 			<div class="row">
 				<div class="col-md-offset-2 col-md-8">
-					<?php if(isset($_SESSION['error_message'])){ ?>
+					<?php if(isset($_GET['error'])){ ?>
 							<div class="alert alert-danger fade-in">
 								<a href="#" class="close" data-dismiss="alert">&times;</a>
-								<strong> <?= $_SESSION['error_message'] ?> </strong>
+								<strong> <?= urldecode($_GET['error']) ?> </strong>
 							</div>
 					<?php } ?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-offset-2 col-md-8">
-					<?php if(isset($_SESSION['success_message'])){ ?>
+					<?php if(isset($_GET['success'])){ ?>
 							<div class="alert alert-success fade-in">
 								<a href="#" class="close" data-dismiss="alert">&times;</a>
-								<strong> <?= $_SESSION['success_message'] ?> </strong>
+								<strong> <?= urldecode($_GET['success']) ?> </strong>
 							</div>
 					<?php } ?>
 				</div>
 			</div>
-			<?php 
-				if(isset($_SESSION['success_message'])){
-					unset($_SESSION['success_message']);
-				}
-				if(isset($_SESSION['error_message'])){
-					unset($_SESSION['error_message']);
-				}
-			?>
 			<div class="row">
 				<div class="col-md-offset-2 col-md-8 text-center">
 					<form method="post" enctype="multipart/form-data" action = " ">

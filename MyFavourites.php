@@ -5,6 +5,12 @@
 	if(isset($_POST['logout'])) {
 		logout();
 	}
+	
+	if(isset($_POST['DeleteMedia'])){
+		$m_id = $_POST['m_id'];
+		$u_id = get_current_uid($_SESSION['username']);
+		delete_favourite_media($u_id, $m_id);
+	}
 ?>
 
 <!-- User's Favourite List Page -->
@@ -39,6 +45,9 @@
 			}
 			.list-group-item{
 				text-align: center;
+			}
+			.remove-favourite {
+				margin-top: 4px;
 			}
 		</style>
 	</head>
@@ -78,13 +87,24 @@
 						<button type="button" class="list-group-item list-group-item-action active">
 							<?php
 								while($media_row = mysqli_fetch_assoc($my_favourite_media)) { ?>
-								<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
-									<li class="list-group-item"><?= $media_row['m_title'] ?></li>
-								</a>
+									<div class="row">
+										<div class="col-md-10">
+											<a href="MediaView.php?m_id=<?= $media_row['m_id'] ?>">
+											<li class="list-group-item"><?= $media_row['m_title'] ?>
+											</li></a>
+										</div>
+										<div class="col-md-2">
+											<form method="POST" class="remove-favourite" onsubmit="return confirm('Are you sure you want to proceed?')">
+												<input type="hidden" name="m_id" value="<?= $media_row['m_id'] ?>" />
+												<input type="submit" class="btn btn-danger" name="DeleteMedia" value="X" />
+											</form>
+										</div>
+									</div>
 							<?php } ?>
 						</button>
 					</div>
 				</div>
+
 			</div>
 		</div>
 	</body>

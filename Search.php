@@ -43,12 +43,6 @@
 			.search-results-list {
 				padding-left: 0px;
 			}
-			.recommendations-div {
-				
-			}
-			.search-div {
-				
-			}
 			.wordcloud{
 				margin-top: 1%;
 				border-style: ridge;

@@ -12,6 +12,12 @@
 		$current_id = get_current_uid($_SESSION['username']);
 		update_contact_type($current_id, $u_id, $type);
 	}
+	
+	if(isset($_POST['DeleteContact'])){
+		$u_id = $_POST['u_id'];
+		$current_id = get_current_uid($_SESSION['username']);
+		delete_contact($current_id, $u_id);
+	}
 ?>
 <html>
 	<head>
@@ -116,6 +122,7 @@
 								<th><i>Lastname</i></th>
 								<th><i>Action</i></th>
 								<th><i>Save</i></th> 
+								<th><i>Delete</i></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -160,6 +167,10 @@
 												<input class='btn btn-info' type='submit' name='SaveType' value='Save' />
 												<input type='hidden' name='u_id' value='".$row['u_id']."' />
 											</td>
+											<td>
+												<input class='btn btn-danger' type='submit' name='DeleteContact' value='Delete' />
+												<input type='hidden' name='u_id' value='".$row['u_id']."' />
+											</td>											
 											</form>
 										</tr>";
 									}
