@@ -135,7 +135,7 @@
 								</td>
 								<td>
 									<a href="Message.php">
-										<img class="home-page-icons" src="images/Messages.png" title="Messages" width="100" height="100">
+										<img class="home-page-icons" src="images/messages.png" title="Messages" width="100" height="100">
 									</a>
 									<br>
 									<i>Messages</i>
