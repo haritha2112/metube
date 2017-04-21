@@ -54,7 +54,7 @@
 					theme: 'fontawesome-stars',
 					onSelect: function(value, text, event) {
 						if (typeof(event) !== 'undefined') {
-							$.post("/MeTube/MediaRating.php", {"MediaRating":1, "values": value}, function(){})
+							$.post("MediaRating.php", {"MediaRating":1, "values": value}, function(){})
 						}
 					}
 				});
@@ -212,7 +212,7 @@
 													<?php 
 														foreach(range(1,5) as $num) {
 													?>
-															<option name="MediaRating" value='<?= $mid ?>|<?= $current_uid ?>|<?= $num ?>' <?php if($num==$current_rating) echo 'selected' ?>> 
+															<option name="MediaRating" value="<?= $mid ?>|<?= $current_uid ?>|<?= $num ?>" <?php if($num==$current_rating) echo 'selected' ?>> 
 																<?= $num ?>
 															</option>
 													<?php
